@@ -1,7 +1,7 @@
 #include<htc.h>
 #include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define _XTAL_FREQ 20e6
 #define rs RD6
@@ -18,7 +18,7 @@
 void lcdcmd(unsigned char);
 void lcddata(unsigned char);
 void disp_num(float num);
-void disp_res(float res, char disp[5]);
+void disp_res(float res,short round);
 void disp_str(char disp[], short clear);
 void lcdinit();
 char scan_key(void);
@@ -65,14 +65,14 @@ void main(void)
 	TRISD7 = 0;          //Port-D PIN-7 as Output
 	__delay_ms(400);
 
-	int k2 = 0, k1 = 0;
+	int k2 = 0, k1 = 0, round=0;
 	char key[4];
 	memset(key, 0, 4);
 	char ke[4];
 	memset(ke, 0, 4);
+	char format[3];
+	memset(format, 0, 3);
 	int i = 0;
-	char disp[5];
-	memset(disp, 0, 5);
 	float res = 0.0;
 	lcdinit();        //Initializing Lcd
 
@@ -81,23 +81,30 @@ void main(void)
 		do {
 			ke[i] = scan_key();
 			i++;
-			if (i > 3) { i = 0; }
 		} while (ke[i - 1] != '=');
 		k2 = atoi(ke);
 		lcdcmd(0x01);    //Clear Lcd
-
 
 		disp_str("CURRENCY= ", 1);
 		i = 0;
 		do {
 			key[i] = scan_key();
 			i++;
-			if (i > 3) { i = 0; }
 		} while (key[i - 1] != '=');
 		k1 = atoi(key);
 		lcdcmd(0x01);    //Clear Lcd
-        
-        
+		
+		disp_str("ROUND= ", 1);
+		i = 0;
+		do {
+			format[i] = scan_key();
+			i++;
+		} while (key[i - 1] != '=');
+		round = atoi(format);
+		lcdcmd(0x01);    //Clear Lcd
+
+		//lcdcmd(0x82);     //Start displying data on lcd at position Row=1 Coulomb=3
+
 		disp_str("***RESULT***", 1);
 
 		lcdcmd(0xC0);   //Jump to second Line of Lcd
@@ -109,102 +116,102 @@ void main(void)
 		{
 		case 0:
 			res = division(k2, EURO);
-			disp_res(res, disp);
+			disp_res(res,round);
 			disp_str("EUR", 0);
 			break;
 		case 1:
 			res = division(k2, DOLAR);
-			disp_res(res, disp);
+			disp_res(res,round);
 			disp_str("USD", 0);
 			break;
 		case 2:
 			res = division(k2, FUNT);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("GBP", 0);
 			break;
 		case 3:
 			res = division(k2, FRANK);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("CHF", 0);
 			break;
 		case 4:
 			res = division(k2, FORINT);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("HUF", 0);
 			break;
 		case 5:
 			res = division(k2, HRYWNA);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("UAH", 0);
 			break;
 		case 6:
 			res = division(k2, JEN);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("JPY", 0);
 			break;
 		case 7:
 			res = division(k2, JUAN);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("CNY", 0);
 			break;
 		case 8:
 			res = division(k2, KORONA);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("CZK", 0);
 			break;
 		case 9:
 			res = division(k2, LEJ);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("RON", 0);
 			break;
 		case 10:
 			res = division(k2, LEW);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("BGN", 0);
 			break;
 		case 11:
 			res = division(k2, LIRA);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("TRY", 0);
 			break;
 		case 12:
 			res = division(k2, PESO);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("ARS", 0);
 			break;
 		case 13:
 			res = division(k2, RAND);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("ZAR", 0);
 			break;
 		case 14:
 			res = division(k2, REAL);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("BRL", 0);
 			break;
 		case 15:
 			res = division(k2, RINGGIT);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("MYR", 0);
 			break;
 		case 16:
 			res = division(k2, RUBEL);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("RUB", 0);
 			break;
 		case 17:
 			res = division(k2, RUPIA);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("INR", 0);
 			break;
 		case 18:
 			res = division(k2, SZEKEL);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("ILS", 0);
 			break;
 		case 19:
 			res = division(k2, WON);
-			disp_res(res, disp);
+			disp_res(res, round);
 			disp_str("KRW", 0);
 			break;
 		}
@@ -270,11 +277,11 @@ float division(int k2, float Curr) {
 	return (float)k2 / Curr;
 }
 
-void disp_num(float num)            
+void disp_num(float num)            //displays calculated value on LCD
 {
-	unsigned char UnitDigit;  
-	unsigned char TenthDigit;  
-	unsigned char decimal;   
+	unsigned char UnitDigit;  //It will contain unit digit of number
+	unsigned char TenthDigit;  //It will contain 10th position digit of number
+	unsigned char decimal;  //Contains Value after decimal digit 
 	int j = 0, numb;
 
 	j = (int)(num * 10);
@@ -282,18 +289,18 @@ void disp_num(float num)
 
 	if (numb < 0)
 	{
-		numb = -1 * numb; 
-		lcddata('-');	
+		numb = -1 * numb;  // Make number positive
+		lcddata('-');	// Display a negative sign on LCD
 	}
 
-	TenthDigit = (numb / 10);	        
+	TenthDigit = (numb / 10);	         // Findout Tenth Digit
 
-	if (TenthDigit != 0)	        
-		lcddata(TenthDigit + 0x30);	 
+	if (TenthDigit != 0)	         // If it is zero, then don't display
+		lcddata(TenthDigit + 0x30);	 // Make Char of TenthDigit and then display it on LCD
 
 	UnitDigit = numb - (TenthDigit * 10);
 
-	lcddata(UnitDigit + 0x30);	 
+	lcddata(UnitDigit + 0x30);	 // Make Char of UnitDigit and then display it on LCD
 	lcddata('.');
 	decimal = (char)(j % 10);
 	lcddata(decimal + 0x30);
@@ -301,9 +308,26 @@ void disp_num(float num)
 	//lcdcmd(0x01);
 }
 
-void disp_res(float res, char disp[5]) {
-	int j = 0;
-	sprintf(disp, "%.2f", res);
+void disp_res(float res,short round) {
+	short j = 0;
+	char disp[8];
+	memset(disp, 0, 8);
+        if(round ==2){
+	   sprintf(disp,"%.2f" , res);
+	}
+	else if(round == 3){
+	   sprintf(disp,"%.3f" , res);
+	}
+	else if(round == 4){
+	   sprintf(disp,"%.4f" , res);
+	}
+	else if(round == 5){
+	   sprintf(disp,"%.5f" , res);
+	}
+	else{
+	   sprintf(disp,"%.2f" , res);
+	} 
+        
 	do {
 		lcddata(disp[j]);
 		j++;
