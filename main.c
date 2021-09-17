@@ -34,49 +34,41 @@ void lcdinit() {
 
 void main(void)
 {
-	float EURO, DOLAR, FUNT, FRANK, FORINT, HRYWNA, JEN, JUAN, KORONA, LEJ,
-		LEW, LIRA, PESO, RAND, REAL, RINGGIT, RUBEL, RUPIA, SZEKEL, WON;
-
-	EURO = 4.58;
-	DOLAR = 3.92;
-	FUNT = 5.34;
-	FRANK = 4.28;
-	FORINT = 1.3;
-	HRYWNA = 0.14;
-	JEN = 3.58;
-	JUAN = 0.6;
-	KORONA = 0.17;
-	LEJ = 0.92;
-	LEW = 2.34;
-	LIRA = 0.45;
-	PESO = 0.49;
-	RAND = 0.25;
-	REAL = 0.72;
-	RINGGIT = 0.92;
-	RUBEL = 0.05;
-	RUPIA = 5.27;
-	SZEKEL = 1.21;
-	WON = 0.33;
+	float currency[20] = { 4.58, 3.92, 5.34, 4.28, 1.3, 0.14, 3.58, 0.6, 0.17,
+	   0.92, 2.34, 0.45, 0.49, 0.25, 0.72, 0.92, 0.05, 5.27, 1.21, 0.33 };
 
 
-	TRISC = 0xF0;        //Rows Output, Coulombs Input
-	TRISB = 0x00;        //Port-B as Output
-	TRISD6 = 0;          //Port-D PIN-6 as Output
-	TRISD7 = 0;          //Port-D PIN-7 as Output
+	TRISC = 0xF0;        
+	TRISB = 0x00;        
+	TRISD6 = 0;          
+	TRISD7 = 0;          
 	__delay_ms(400);
 
-	int k2 = 0, k1 = 0, round=0;
+	int k2 = 0, k1 = 0;
+	short round;
+	char mode, format;
 	char key[4];
 	memset(key, 0, 4);
 	char ke[4];
 	memset(ke, 0, 4);
-	char format[3];
-	memset(format, 0, 3);
+	char integ[4];
+	memset(integ, 0, 4);
+	char frac[4];
+	memset(frac, 0, 4);
+	char edit_curr[8];
+	memset(edit_curr, 0, 8);
+	float new_curr=0.0;
 	int i = 0;
 	float res = 0.0;
 	lcdinit();        //Initializing Lcd
 
 	while (1) {
+		disp_str("1=Edit currency", 1);
+	        lcdcmd(0xC0);
+	        disp_str("2=Calculator ", 1);
+		mode = scan_key();
+	        lcdcmd(0x01);
+		if(mode == '2'){
 		disp_str("ENTER VALUE=", 1);
 		do {
 			ke[i] = scan_key();
@@ -96,14 +88,9 @@ void main(void)
 		
 		disp_str("ROUND= ", 1);
 		i = 0;
-		do {
-			format[i] = scan_key();
-			i++;
-		} while (key[i - 1] != '=');
+		format = scan_key();
 		round = atoi(format);
 		lcdcmd(0x01);    //Clear Lcd
-
-		//lcdcmd(0x82);     //Start displying data on lcd at position Row=1 Coulomb=3
 
 		disp_str("***RESULT***", 1);
 
@@ -111,110 +98,121 @@ void main(void)
 		disp_num(k2);
 		disp_str("PLN", 1);
 		lcddata('=');
+		
+		res = division(k2, currency[k1]);
+	        disp_res(res,round);
 
 		switch (k1)
 		{
 		case 0:
-			res = division(k2, EURO);
-			disp_res(res,round);
 			disp_str("EUR", 0);
 			break;
 		case 1:
-			res = division(k2, DOLAR);
-			disp_res(res,round);
 			disp_str("USD", 0);
 			break;
 		case 2:
-			res = division(k2, FUNT);
-			disp_res(res, round);
 			disp_str("GBP", 0);
 			break;
 		case 3:
-			res = division(k2, FRANK);
-			disp_res(res, round);
 			disp_str("CHF", 0);
 			break;
 		case 4:
-			res = division(k2, FORINT);
-			disp_res(res, round);
 			disp_str("HUF", 0);
 			break;
 		case 5:
-			res = division(k2, HRYWNA);
-			disp_res(res, round);
 			disp_str("UAH", 0);
 			break;
 		case 6:
-			res = division(k2, JEN);
-			disp_res(res, round);
 			disp_str("JPY", 0);
 			break;
 		case 7:
-			res = division(k2, JUAN);
-			disp_res(res, round);
 			disp_str("CNY", 0);
 			break;
 		case 8:
-			res = division(k2, KORONA);
-			disp_res(res, round);
 			disp_str("CZK", 0);
 			break;
 		case 9:
-			res = division(k2, LEJ);
-			disp_res(res, round);
 			disp_str("RON", 0);
 			break;
 		case 10:
-			res = division(k2, LEW);
-			disp_res(res, round);
 			disp_str("BGN", 0);
 			break;
 		case 11:
-			res = division(k2, LIRA);
-			disp_res(res, round);
 			disp_str("TRY", 0);
 			break;
 		case 12:
-			res = division(k2, PESO);
-			disp_res(res, round);
 			disp_str("ARS", 0);
 			break;
 		case 13:
-			res = division(k2, RAND);
-			disp_res(res, round);
 			disp_str("ZAR", 0);
 			break;
 		case 14:
-			res = division(k2, REAL);
-			disp_res(res, round);
 			disp_str("BRL", 0);
 			break;
 		case 15:
-			res = division(k2, RINGGIT);
-			disp_res(res, round);
 			disp_str("MYR", 0);
 			break;
 		case 16:
-			res = division(k2, RUBEL);
-			disp_res(res, round);
 			disp_str("RUB", 0);
 			break;
 		case 17:
-			res = division(k2, RUPIA);
-			disp_res(res, round);
 			disp_str("INR", 0);
 			break;
 		case 18:
-			res = division(k2, SZEKEL);
-			disp_res(res, round);
 			disp_str("ILS", 0);
 			break;
 		case 19:
-			res = division(k2, WON);
-			disp_res(res, round);
 			disp_str("KRW", 0);
 			break;
 		}
+	     }
+	     else if(mode == '1'){
+		disp_str("CURRENCY= ", 1);
+		i = 0;
+		do {
+			key[i] = scan_key();
+			i++;
+		} while (key[i - 1] != '=');
+		k1 = atoi(key);
+		memset(key, 0, 4);
+		lcdcmd(0x01);    //Clear Lcd
+		
+		disp_str("ENTER INTGER", 1);
+		lcdcmd(0xC0);
+		disp_str("PART ", 1);
+		i = 0;
+		do {
+			integ[i] = scan_key();
+			i++;
+		} while (integ[i - 1] != '=');
+		lcdcmd(0x01);    //Clear Lcd
+		
+		disp_str("ENTER FRACTION", 1);
+		lcdcmd(0xC0);
+		disp_str("PART ", 1);
+		i = 0;
+		do {
+			frac[i] = scan_key();
+			i++;
+		} while (frac[i - 1] != '=');
+		lcdcmd(0x01);    //Clear Lcd
+		i=0;
+
+		for(i=0;i<4;i++){
+		   if(integ[i]=='='){
+			integ[i]=NULL;
+		      }
+		}
+		strncat(edit_curr,integ,3);
+		strncat(edit_curr,".",1);
+		strncat(edit_curr,frac,3);
+		
+		new_curr = atof(edit_curr);
+		
+		currency[k1] = new_curr;
+		i=0;
+		
+	     }
 	}
 }
 
@@ -277,11 +275,11 @@ float division(int k2, float Curr) {
 	return (float)k2 / Curr;
 }
 
-void disp_num(float num)            //displays calculated value on LCD
+void disp_num(float num)            
 {
-	unsigned char UnitDigit;  //It will contain unit digit of number
-	unsigned char TenthDigit;  //It will contain 10th position digit of number
-	unsigned char decimal;  //Contains Value after decimal digit 
+	unsigned char UnitDigit;  
+	unsigned char TenthDigit;  
+	unsigned char decimal;  
 	int j = 0, numb;
 
 	j = (int)(num * 10);
@@ -289,18 +287,18 @@ void disp_num(float num)            //displays calculated value on LCD
 
 	if (numb < 0)
 	{
-		numb = -1 * numb;  // Make number positive
-		lcddata('-');	// Display a negative sign on LCD
+		numb = -1 * numb;  
+		lcddata('-');	
 	}
 
-	TenthDigit = (numb / 10);	         // Findout Tenth Digit
+	TenthDigit = (numb / 10);	         
 
-	if (TenthDigit != 0)	         // If it is zero, then don't display
-		lcddata(TenthDigit + 0x30);	 // Make Char of TenthDigit and then display it on LCD
+	if (TenthDigit != 0)	       
+		lcddata(TenthDigit + 0x30);	
 
 	UnitDigit = numb - (TenthDigit * 10);
 
-	lcddata(UnitDigit + 0x30);	 // Make Char of UnitDigit and then display it on LCD
+	lcddata(UnitDigit + 0x30);	 
 	lcddata('.');
 	decimal = (char)(j % 10);
 	lcddata(decimal + 0x30);
