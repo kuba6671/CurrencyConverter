@@ -18,7 +18,7 @@
 void lcdcmd(unsigned char);
 void lcddata(unsigned char);
 void disp_num(float num);
-void disp_res(float res,short round);
+void disp_res(float res,char round);
 void disp_str(char disp[], short clear);
 void lcdinit();
 char scan_key(void);
@@ -45,8 +45,7 @@ void main(void)
 	__delay_ms(400);
 
 	int k2 = 0, k1 = 0;
-	short round;
-	char mode, format;
+	char mode, round;
 	char key[4];
 	memset(key, 0, 4);
 	char ke[4];
@@ -86,12 +85,11 @@ void main(void)
 		k1 = atoi(key);
 		lcdcmd(0x01);    //Clear Lcd
 		
-		disp_str("ROUND= ", 1);
+		disp_str("PRECISION= ", 1);
 		i = 0;
-		format = scan_key();
-		round = atoi(format);
+		round = scan_key();
 		lcdcmd(0x01);    //Clear Lcd
-
+		
 		disp_str("***RESULT***", 1);
 
 		lcdcmd(0xC0);   //Jump to second Line of Lcd
@@ -177,7 +175,7 @@ void main(void)
 		memset(key, 0, 4);
 		lcdcmd(0x01);    //Clear Lcd
 		
-		disp_str("ENTER INTGER", 1);
+		disp_str("ENTER INTEGER", 1);
 		lcdcmd(0xC0);
 		disp_str("PART ", 1);
 		i = 0;
@@ -306,20 +304,20 @@ void disp_num(float num)
 	//lcdcmd(0x01);
 }
 
-void disp_res(float res,short round) {
+void disp_res(float res,char round) {
 	short j = 0;
 	char disp[8];
 	memset(disp, 0, 8);
-        if(round ==2){
+        if(round =='2'){
 	   sprintf(disp,"%.2f" , res);
 	}
-	else if(round == 3){
+	else if(round == '3'){
 	   sprintf(disp,"%.3f" , res);
 	}
-	else if(round == 4){
+	else if(round == '4'){
 	   sprintf(disp,"%.4f" , res);
 	}
-	else if(round == 5){
+	else if(round == '5'){
 	   sprintf(disp,"%.5f" , res);
 	}
 	else{
